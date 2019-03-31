@@ -1,2 +1,4 @@
 .idea/
 get_data.py.dist
+./data/
+data/
