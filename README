@@ -1,12 +1,14 @@
 
 ### source of weather
 
-https://www.wunderground.com/hurricane/atlantic/2017/tropical-storm-harvey
-
 https://www.wunderground.com/hurricane/atlantic/2017/tropical-storm-irma
+(key impact period: Sept 09, 2017 -> Sept 11, 2017)
+
+https://www.wunderground.com/hurricane/atlantic/2017/tropical-storm-harvey
+(key impact period: Aug 24, 2017 -> Aug 29, 2017)
 
 https://www.wunderground.com/hurricane/atlantic/2012/Post-Tropical-Cyclone-Sandy
-
+(key impact period: Oct 28, 2012 -> Nov 02, 2012)
 
 https://weather.com/weather/hourbyhour/l/USTX0617:1:US
 
@@ -20,3 +22,10 @@ Harvey - Houston
 
 Irma - Florida
 
+
+
+
+#### Reference ####
+Co-occurrence network:
+
+http://andrewtrick.com/stormlight_network.html
