@@ -2,9 +2,9 @@ import collections
 import csv
 
 
-def top_words(text, count=100):
-    counts = collections.Counter(text.split())
-    return counts.most_common(5)
+def top_words(word_list, count=100):
+    counts = collections.Counter(word_list)
+    return counts.most_common(count)
 
 
 filepath = 'data/harvey/harvey_2017_08_17.csv'
