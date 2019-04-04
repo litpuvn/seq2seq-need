@@ -2,12 +2,12 @@ import collections
 import csv
 
 
-def top_words(word_list, count=100):
+def extract_top_words(word_list, count=5):
     counts = collections.Counter(word_list)
     return counts.most_common(count)
 
 
-filepath = 'data/harvey/harvey_2017_08_17.csv'
+filepath = 'data/harvey/with_harvey_tag/harvey_2017_08_22.csv'
 tweet_by_city = dict()
 with open(filepath) as filepointer:
     text_reader = csv.reader(filepointer, delimiter=',')
@@ -26,12 +26,11 @@ with open(filepath) as filepointer:
         if city not in tweet_by_city:
             tweet_by_city[city] = []
 
-        word_list = tweet_by_city[city]
-        word_list = word_list + text.split()
+        tweet_by_city[city] = tweet_by_city[city] + text.split()
 
     city_top_words = dict()
     for city, words in tweet_by_city.items():
-        top_words = top_words(words)
+        top_words = extract_top_words(words)
         city_top_words[city] = top_words
 
         print("City", city, ":top words:", top_words)
