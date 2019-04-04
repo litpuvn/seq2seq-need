@@ -7,7 +7,7 @@ def extract_top_words(word_list, count=5):
     return counts.most_common(count)
 
 
-filepath = 'data/harvey/with_harvey_tag/harvey_2017_08_22.csv'
+filepath = 'data/harvey/with_harvey_tag/clean/harvey_2017_08_28.csv'
 tweet_by_city = dict()
 with open(filepath) as filepointer:
     text_reader = csv.reader(filepointer, delimiter=',')
@@ -34,5 +34,7 @@ with open(filepath) as filepointer:
         city_top_words[city] = top_words
 
         print("City", city, ":top words:", top_words)
+
+    print("Size of city", len(city_top_words))
 
 
