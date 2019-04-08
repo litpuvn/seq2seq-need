@@ -8,6 +8,7 @@ def extract_top_words(word_list, count=5):
 
 
 data_date = '2017_08_28'
+reformatted_data_date = data_date.replace('_', '-')
 filepath = 'data/harvey/with_harvey_tag/clean/harvey_' + data_date + '.csv'
 
 cooccurrence_matrix_path = 'data/harvey/with_harvey_tag/cities'
@@ -20,7 +21,7 @@ data_end_minute = data_start_minute + 10
 
 def is_valid_time_block(tweet_date, tweet_hour, tweet_minute):
 
-    if data_date != tweet_date:
+    if reformatted_data_date != tweet_date:
         return False
 
     if data_hour != tweet_hour:
@@ -51,6 +52,7 @@ with open(filepath) as filepointer:
 
         if city not in words_by_city:
             words_by_city[city] = []
+            tweets_by_city[city] = []
 
         words_by_city[city] = words_by_city[city] + text.split()
         tweets_by_city[city] = tweets_by_city[city] + [text]
@@ -70,11 +72,11 @@ with open(filepath) as filepointer:
         city_tweets = tweets_by_city[city]
         city_matrix = city_cooccurrence_matrix[city]
         for m_tweet in city_tweets:
-            for w1 in top_words:
+            for (w1, freq1) in top_words:
                 if w1 not in city_matrix:
                     city_matrix[w1] = dict()
                 w1_city_matrix = city_matrix[w1]
-                for w2 in top_100_words:
+                for (w2, freq2) in top_100_words:
                     if w2 not in w1_city_matrix:
                         w1_city_matrix[w2] = 0
 
@@ -86,12 +88,14 @@ with open(filepath) as filepointer:
         ## write to file for review
         ## set of co-occurrence metrix of these top lists
         cooccurence_matrix_filename = city + '_' + data_date + '_' + str(data_hour) + '_' + str(data_end_minute) + '.csv'
-        with open(cooccurrence_matrix_path + '', 'w') as matrix_writer:
+        with open(cooccurrence_matrix_path + '/' + cooccurence_matrix_filename, 'w') as matrix_writer:
             csv_writer = csv.writer(matrix_writer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow([''] + top_words)
-            for w1 in top_words:
+            tops = [w for (w, fre) in top_100_words]
+            csv_writer.writerow([''] + tops)
+            for (w1, freq1) in top_words:
                 row_data = [w1]
-                for w2 in top_100_words:
+                w1_city_matrix = city_matrix[w1]
+                for (w2, freq2) in top_100_words:
                     w1_w2_count = w1_city_matrix[w2]
                     row_data = row_data + [w1_w2_count]
                 csv_writer.writerow(row_data)
