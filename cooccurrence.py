@@ -84,6 +84,7 @@ with open(filepath) as filepointer:
                     if w1 in m_tweet and w2 in m_tweet:
                         w1_city_matrix[w2] = w1_city_matrix[w2] + 1
 
+        print("***** CITY *****", city)
 
         ## write to file for review
         ## set of co-occurrence metrix of these top lists
@@ -91,7 +92,9 @@ with open(filepath) as filepointer:
         with open(cooccurrence_matrix_path + '/' + cooccurence_matrix_filename, 'w') as matrix_writer:
             csv_writer = csv.writer(matrix_writer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             tops = [w for (w, fre) in top_100_words]
-            csv_writer.writerow([''] + tops)
+            row_data = [''] + tops
+            csv_writer.writerow(row_data)
+            print(row_data)
             for (w1, freq1) in top_words:
                 row_data = [w1]
                 w1_city_matrix = city_matrix[w1]
@@ -99,9 +102,9 @@ with open(filepath) as filepointer:
                     w1_w2_count = w1_city_matrix[w2]
                     row_data = row_data + [w1_w2_count]
                 csv_writer.writerow(row_data)
+                print(row_data)
 
 
-        print("done")
         #print("City", city, ":top words:", top_words)
 
     print("Size of city", len(city_top_words))
