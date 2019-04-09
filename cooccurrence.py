@@ -9,7 +9,7 @@ def extract_top_words(word_list, count=5):
     return counts.most_common(count)
 
 
-data_date = '2017_08_27'
+data_date = '2017_09_02'
 reformatted_data_date = data_date.replace('_', '-')
 filepath = 'data/harvey/with_harvey_tag/clean/harvey_' + data_date + '.csv'
 

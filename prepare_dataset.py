@@ -1,6 +1,7 @@
 import collections
 import csv
 import datetime
+import os
 
 def extract_top_words(word_list, count=5):
     counts = collections.Counter(word_list)
@@ -9,56 +10,49 @@ def extract_top_words(word_list, count=5):
 
 data_date = '2017_08_28'
 reformatted_data_date = data_date.replace('_', '-')
-filepath = 'data/harvey/with_harvey_tag/clean/harvey_' + data_date + '.csv'
+filepath = 'data/harvey/with_harvey_tag/cities'
 
 
 words_by_city = dict()
 
-with open(filepath) as filepointer:
-    text_reader = csv.reader(filepointer, delimiter=',')
+def get_cities_for_time_block(date, hour, minute):
 
-    for index, row in enumerate(text_reader):
-        if index < 1:
-            continue
+    city_path = filepath + '/' + date + '/' + (str(hour) + '-' + str(minute))
 
-        t_date = row[1]
-        t_hour = int(row[2])
-        t_minute = int(row[3])
+    if not os.path.exists(city_path):
+        return []
 
+    files = [f for f in os.listdir(city_path) if os.path.isfile(os.path.join(city_path, f))]
 
-        city = row[4].lower()
-        text = row[6]
+    cities = [city[0:city.index('_')] for city in files]
 
-        if city not in words_by_city:
-            words_by_city[city] = []
+    return cities
 
-        words_by_city[city] = words_by_city[city] + text.split()
+timestamp_obj = datetime.datetime.strptime(reformatted_data_date + ' 00:00', '%Y-%m-%d %H:%M')
+end_time = datetime.datetime.strptime(reformatted_data_date + ' 23:59', '%Y-%m-%d %H:%M')
 
-    timestamp_obj = datetime.datetime.strptime(reformatted_data_date + ' 00:00', '%Y-%m-%d %H:%M')
-    end_time = datetime.datetime.strptime(reformatted_data_date + ' 23:59', '%Y-%m-%d %H:%M')
+with open('data/sample-' + reformatted_data_date + '.csv', 'w') as filePointer:
+    csv_writer = csv.writer(filePointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    row_data = ['Date', 'Start_hour', 'Start_Minute', 'End_Hour', 'End_minute', 'City', 'Needs']
+    csv_writer.writerow(row_data)
 
-    with open('data/sample-' + reformatted_data_date + '.csv', 'w') as filePointer:
-        csv_writer = csv.writer(filePointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        row_data = ['Date', 'Start_hour', 'Start_Minute', 'End_Hour', 'End_minute', 'City', 'Needs']
-        csv_writer.writerow(row_data)
+    while timestamp_obj <= end_time:
+        cur_hour = timestamp_obj.strftime('%H')
+        cur_minute = timestamp_obj.strftime('%M')
 
-        while timestamp_obj <= end_time:
-            cur_hour = timestamp_obj.strftime('%H')
-            cur_minute = timestamp_obj.strftime('%M')
+        end_time_block = timestamp_obj + datetime.timedelta(minutes=9, seconds=59)
+        end_hour = int(end_time_block.strftime('%H'))
+        end_minute = int(end_time_block.strftime('%M'))
 
-            next_time_block = timestamp_obj + datetime.timedelta(minutes=9, seconds=59)
-            next_hour = next_time_block.strftime('%H')
-            next_minute = next_time_block.strftime('%M')
+        cities = get_cities_for_time_block(reformatted_data_date, end_hour, end_minute)
+        for city in cities:
+            row_data = [reformatted_data_date, cur_hour, cur_minute, end_hour, end_minute, city, '']
+            csv_writer.writerow(row_data)
 
-            for city in words_by_city.keys():
-                row_data = [reformatted_data_date, cur_hour, cur_minute, next_hour, next_minute, city, '']
-                csv_writer.writerow(row_data)
-
-            timestamp_obj = timestamp_obj + datetime.timedelta(minutes=10)
+        timestamp_obj = timestamp_obj + datetime.timedelta(minutes=10)
 
 
 
 
-    print("Done")
 
 
