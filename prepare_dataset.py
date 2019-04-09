@@ -31,7 +31,7 @@ def get_cities_for_time_block(date, hour, minute):
 timestamp_obj = datetime.datetime.strptime(reformatted_data_date + ' 00:00', '%Y-%m-%d %H:%M')
 end_time = datetime.datetime.strptime(reformatted_data_date + ' 23:59', '%Y-%m-%d %H:%M')
 
-with open('data/sample-' + reformatted_data_date + '.csv', 'w') as filePointer:
+with open('data/harvey/label/sample-' + reformatted_data_date + '.csv', 'w') as filePointer:
     csv_writer = csv.writer(filePointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     row_data = ['Date', 'Start_hour', 'Start_Minute', 'End_Hour', 'End_minute', 'City', 'Needs']
     csv_writer.writerow(row_data)
