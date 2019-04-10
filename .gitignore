@@ -2,3 +2,6 @@
 get_data.py.dist
 ./data/
 data/
+recurrentshop/__pycache__/
+recurrentshop/backend/__pycache__/
+seq2seq/__pycache__/
