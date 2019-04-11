@@ -7,3 +7,6 @@ recurrentshop/backend/__pycache__/
 seq2seq/__pycache__/
 output/
 data_movie/
+lib/w2v_model/__pycache__/
+utils/__pycache__/
+lib/nn_model/__pycache__/
