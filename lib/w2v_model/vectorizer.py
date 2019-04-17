@@ -3,7 +3,7 @@ from configs.config import TOKEN_REPRESENTATION_SIZE
 
 
 def get_token_vector(token, model):
-    if token in model.vocab:
+    if token in model.wv.vocab:
         return np.array(model[token])
 
     # return a zero vector for the words that are not presented in the model
