@@ -30,7 +30,7 @@ def get_nn_model(token_dict_size):
     )
 
     model.add(seq2seq)
-    model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
     # use previously saved model if it exists
     _logger.info('Looking for a model %s' % NN_MODEL_PATH)

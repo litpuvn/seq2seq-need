@@ -24,6 +24,10 @@ def _train_model(tokenized_lines, params):
 
     model.build_vocab(tokenized_lines_for_voc)
     model.train(tokenized_lines_for_train, total_examples=model.corpus_count, epochs=model.epochs)
+    # model.train(tokenized_lines_for_train, total_examples=len(tokenized_lines), epochs=model.epochs)
+
+    print('Parameters for training: total_examples=', model.corpus_count, "epochs=", model.epochs)
+    _logger.info('Parameters for training: %s' % params_str)
 
     return model
 
