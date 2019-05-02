@@ -11,3 +11,4 @@ lib/w2v_model/__pycache__/
 utils/__pycache__/
 lib/nn_model/__pycache__/
 configs/__pycache__/
+data_trans
