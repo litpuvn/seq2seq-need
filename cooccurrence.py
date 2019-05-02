@@ -13,12 +13,12 @@ data_date = '2017_09_02'
 reformatted_data_date = data_date.replace('_', '-')
 filepath = 'data/harvey/with_harvey_tag/clean/harvey_' + data_date + '.csv'
 
-cooccurrence_matrix_path = 'data/harvey/with_harvey_tag/cities'
+cooccurrence_matrix_path = 'data/harvey/with_harvey_tag/hourly/cities'
 
 
 data_hour = 0
 data_start_minute = 0
-data_end_minute = data_start_minute + 10
+data_end_minute = data_start_minute + 59
 
 
 def is_valid_time_block(tweet_date, tweet_hour, tweet_minute):
@@ -46,7 +46,7 @@ while timestamp_obj < end_time:
     tweets_by_city = dict()
     data_hour = int(timestamp_obj.strftime('%H'))
     data_start_minute = int(timestamp_obj.strftime('%M'))
-    data_end_minute = data_start_minute + 9
+    data_end_minute = data_start_minute + 59
 
     with open(filepath) as filepointer:
         text_reader = csv.reader(filepointer, delimiter=',')
@@ -76,7 +76,7 @@ while timestamp_obj < end_time:
         city_top_words = dict()
         city_cooccurrence_matrix = dict()
         for city, words in words_by_city.items():
-            top_words = extract_top_words(words)
+            top_words = extract_top_words(words, count=30)
             top_100_words = extract_top_words(words, count=100)
 
             city_top_words[city] = top_words
@@ -126,7 +126,7 @@ while timestamp_obj < end_time:
 
             #print("City", city, ":top words:", top_words)
 
-    timestamp_obj = timestamp_obj + datetime.timedelta(minutes=10)
+    timestamp_obj = timestamp_obj + datetime.timedelta(minutes=60)
     print("Size of city", len(city_top_words))
 
 

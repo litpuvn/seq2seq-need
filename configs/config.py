@@ -9,12 +9,13 @@ W2V_MODELS_DIR = 'w2v_models'
 
 # set paths of training and testing sets
 # CORPUS_NAME = 'movie_lines_cleaned'
-CORPUS_NAME = 'movie_lines_cleaned_10k'
+# CORPUS_NAME = 'movie_lines_cleaned_10k'
+CORPUS_NAME = 'movie_lines_cleaned_500'
 CORPUS_PATH = os.path.join('/home/long/TTU-SOURCES/seq2seq-need/data_movie/train', CORPUS_NAME + '.txt')
 TEST_DATASET_PATH = os.path.join('/home/long/TTU-SOURCES/seq2seq-need/data_movie', 'test', 'test_set.txt')
 
 # set word2vec params
-TOKEN_REPRESENTATION_SIZE = 256
+TOKEN_REPRESENTATION_SIZE = 32
 VOCAB_MAX_SIZE = 20000
 TOKEN_MIN_FREQUENCY = 1
 
@@ -27,7 +28,7 @@ ANSWER_MAX_TOKEN_LENGTH = 6
 TRAIN_BATCH_SIZE = 32
 SAMPLES_BATCH_SIZE = TRAIN_BATCH_SIZE
 TEST_PREDICTIONS_FREQUENCY = 5
-FULL_LEARN_ITER_NUM = 500
+FULL_LEARN_ITER_NUM = 1
 
 # local paths and strs that depend on previous params
 TOKEN_INDEX_PATH = os.path.join(DATA_PATH, 'words_index', 'w_idx_' + CORPUS_NAME + '_m' + str(TOKEN_MIN_FREQUENCY) + '.txt')
@@ -47,7 +48,7 @@ W2V_PARAMS = {
     "min_w_num": TOKEN_MIN_FREQUENCY,
     "vocab_max_size": VOCAB_MAX_SIZE,
     "win_size": 5,
-    "workers_num": 25
+    "workers_num": 5
 }
 
 # nn params that depend on previous params
