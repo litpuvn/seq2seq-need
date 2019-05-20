@@ -132,32 +132,6 @@ SOS_token = 0
 EOS_token = 1
 
 
-
-
-######################################################################
-# The files are all in Unicode, to simplify we will turn Unicode
-# characters to ASCII, make everything lowercase, and trim most
-# punctuation.
-#
-
-# Turn a Unicode string to plain ASCII, thanks to
-# https://stackoverflow.com/a/518232/2809427
-def unicodeToAscii(s):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
-    )
-
-# Lowercase, trim, and remove non-letter characters
-
-
-def normalizeString(s):
-    s = unicodeToAscii(s.lower().strip())
-    s = re.sub(r"([.!?])", r" \1", s)
-    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
-    return s
-
-
 ######################################################################
 # To read the data file we will split the file into lines, and then split
 # lines into pairs. The files are all English → Other Language, so if we
@@ -176,11 +150,11 @@ def read_requences():
             if i < 1:
                 continue
 
-            s1 = ' '.join(row[0:5])
-            s1 = normalizeString(s1)
+            s1 = ' '.join(row[1:11])
+            # s1 = normalizeString(s1)
 
-            s2 = ' '.join(row[5:10])
-            s2 = normalizeString(s2)
+            s2 = ' '.join(row[11:12])
+            # s2 = normalizeString(s2)
 
             pairs.append([s1, s2])
 
@@ -268,8 +242,8 @@ def prepareData():
 teacher_forcing_ratio = 0.5
 
 
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion, max_length=MAX_LENGTH):
-    encoder_hidden = encoder.initHidden()
+def train(input_tensor, target_tensor, encoder: EncoderRNN, decoder: AttnDecoderRNN, encoder_optimizer, decoder_optimizer, criterion, max_length=MAX_LENGTH):
+    encoder_hidden = encoder.initHidden(device=device)
 
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
