@@ -146,6 +146,8 @@ def read_requences():
     # Read the file and split into lines
     with open('data/need_dataset.csv', encoding='utf-8') as dataset_pointer:
         csv_reader = csv.reader(dataset_pointer, delimiter=',')
+
+        maxlen = 0
         for i, row in enumerate(csv_reader):
             if i < 1:
                 continue
@@ -155,9 +157,12 @@ def read_requences():
 
             s2 = ' '.join(row[11:12])
             # s2 = normalizeString(s2)
-
+            l = len(s2.split())
+            if l > maxlen:
+                maxlen = l
             pairs.append([s1, s2])
 
+    print('max sentence length:', maxlen)
     # Reverse pairs, make Lang instances
     input_lang = Lang("input_sequence")
     output_lang = Lang("output_sequence")
@@ -174,7 +179,7 @@ def read_requences():
 # earlier).
 #
 
-MAX_LENGTH = 10
+MAX_LENGTH = 23
 
 eng_prefixes = (
     "i am ", "i m ",

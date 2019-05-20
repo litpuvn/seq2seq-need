@@ -12,7 +12,7 @@ from util_seq2seq import AttnDecoderRNN, EncoderRNN, Lang
 
 SOS_token = 0
 EOS_token = 1
-MAX_LENGTH = 10
+MAX_LENGTH = 23
 
 
 class EvalSeq2Seq:
