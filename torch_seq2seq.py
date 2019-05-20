@@ -370,7 +370,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
 
-    eval_seq.showPlot(plot_losses)
+    eval_seq.showPlot(plot_losses, force_show=True)
 
 
 ######################################################################
@@ -417,3 +417,7 @@ eval_seq = EvalSeq2Seq(input_lang=input_lang, output_lang=output_lang, pairs=pai
 trainIters(encoder1, attn_decoder1, 5000, print_every=500)
 
 eval_seq.evaluateRandomly(encoder1, attn_decoder1)
+
+# output_words, attentions = evaluate(
+#     encoder1, attn_decoder1, "je suis trop froid .")
+# plt.matshow(attentions.numpy())

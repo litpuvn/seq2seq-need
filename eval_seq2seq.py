@@ -26,13 +26,16 @@ class EvalSeq2Seq:
         self.device = device
 
 
-    def showPlot(self, points):
+    def showPlot(self, points, force_show=False):
         plt.figure()
         fig, ax = plt.subplots()
         # this locator puts ticks at regular intervals
         loc = ticker.MultipleLocator(base=0.2)
         ax.yaxis.set_major_locator(loc)
         plt.plot(points)
+
+        if force_show:
+            plt.show()
 
     ######################################################################
     # .. note:: There are other forms of attention that work around the length
@@ -117,7 +120,7 @@ class EvalSeq2Seq:
     # input, target, and output to make some subjective quality judgements:
     #
 
-    def evaluateRandomly(self, encoder, decoder, n=10):
+    def evaluateRandomly(self, encoder, decoder, n=4, show_attention=False):
         for i in range(n):
             pair = random.choice(self.pairs)
             print('>', pair[0])
@@ -126,6 +129,10 @@ class EvalSeq2Seq:
             output_sentence = ' '.join(output_words)
             print('<', output_sentence)
             print('')
+
+            if show_attention == True:
+                plt.matshow(attentions.numpy())
+                plt.show()
 
     ######################################################################
     #
