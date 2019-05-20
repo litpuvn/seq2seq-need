@@ -92,7 +92,7 @@ class EncoderRNN(nn.Module):
         output, hidden = self.gru(output, hidden)
         return output, hidden
 
-    def initHidden(self):
+    def initHidden(self, device):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 ######################################################################
@@ -140,7 +140,7 @@ class DecoderRNN(nn.Module):
         output = self.softmax(self.out(output[0]))
         return output, hidden
 
-    def initHidden(self):
+    def initHidden(self, device):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 ######################################################################
@@ -181,6 +181,7 @@ class DecoderRNN(nn.Module):
 #
 #
 
+MAX_LENGTH = 10
 class AttnDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
         super(AttnDecoderRNN, self).__init__()
@@ -214,6 +215,6 @@ class AttnDecoderRNN(nn.Module):
         output = F.log_softmax(self.out(output[0]), dim=1)
         return output, hidden, attn_weights
 
-    def initHidden(self):
+    def initHidden(self, device):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 

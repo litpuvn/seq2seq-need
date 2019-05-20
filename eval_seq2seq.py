@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import random
-
+from util_seq2seq import AttnDecoderRNN, EncoderRNN, Lang
 
 SOS_token = 0
 EOS_token = 1
@@ -17,7 +17,7 @@ MAX_LENGTH = 10
 
 class EvalSeq2Seq:
 
-    def __init__(self, input_lang, output_lang, pairs, encoder, attn_decoder, device):
+    def __init__(self, input_lang: Lang, output_lang: Lang, pairs, encoder: EncoderRNN, attn_decoder: AttnDecoderRNN, device):
         self.input_lang = input_lang
         self.output_lang = output_lang
         self.pairs = pairs
@@ -76,11 +76,11 @@ class EvalSeq2Seq:
     # attention outputs for display later.
     #
 
-    def evaluate(self, encoder, decoder, sentence, max_length=MAX_LENGTH):
+    def evaluate(self, encoder: EncoderRNN, decoder: AttnDecoderRNN, sentence, max_length=MAX_LENGTH):
         with torch.no_grad():
             input_tensor = self.tensorFromSentence(self.input_lang, sentence)
             input_length = input_tensor.size()[0]
-            encoder_hidden = encoder.initHidden()
+            encoder_hidden = encoder.initHidden(device=self.device)
 
             encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=self.device)
 
