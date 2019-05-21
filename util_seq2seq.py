@@ -181,7 +181,7 @@ class DecoderRNN(nn.Module):
 #
 #
 
-MAX_LENGTH = 23
+MAX_LENGTH = 24
 class AttnDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
         super(AttnDecoderRNN, self).__init__()

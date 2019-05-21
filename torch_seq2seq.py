@@ -145,29 +145,31 @@ def read_requences():
     pairs = []
     houstons = []
     # Read the file and split into lines
-    with open('data/need_dataset.csv', encoding='utf-8') as dataset_pointer:
+    with open('data/need_dataset.csv') as dataset_pointer:
         csv_reader = csv.reader(dataset_pointer, delimiter=',')
 
         maxlen = 0
+        max_sentence = ''
         for i, row in enumerate(csv_reader):
             if i < 1:
                 continue
 
-            s1 = ' '.join(row[1:11])
+            s1 = ' '.join(row[0:7])
             # s1 = normalizeString(s1)
 
-            s2 = ' '.join(row[11:12])
+            s2 = ' '.join(row[7:8])
             # s2 = normalizeString(s2)
             l = len(s2.split())
             if l > maxlen:
                 maxlen = l
+                max_sentence = s2
             pairs.append([s1, s2])
 
-            loc = row[10]
+            loc = row[0]
             if loc == 'houston':
                 houstons.append([s1, s2])
 
-    print('max sentence length:', maxlen)
+    print('max sentence length:', maxlen, '; setence=', max_sentence)
     # Reverse pairs, make Lang instances
     input_lang = Lang("input_sequence")
     output_lang = Lang("output_sequence")
@@ -184,17 +186,7 @@ def read_requences():
 # earlier).
 #
 
-MAX_LENGTH = 23
-
-eng_prefixes = (
-    "i am ", "i m ",
-    "he is", "he s ",
-    "she is", "she s ",
-    "you are", "you re ",
-    "we are", "we re ",
-    "they are", "they re "
-)
-
+MAX_LENGTH = 24
 
 
 
