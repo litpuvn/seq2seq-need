@@ -114,7 +114,10 @@ class EvalSeq2Seq:
                     decoded_words.append('<EOS>')
                     break
                 else:
-                    decoded_words.append(self.output_lang.index2word[topi.item()])
+                    w = self.output_lang.index2word[topi.item()]
+                    # avoid duplicate needs
+                    if w not in decoded_words:
+                        decoded_words.append(w)
 
                 decoder_input = topi.squeeze().detach()
 
@@ -160,9 +163,11 @@ class EvalSeq2Seq:
 
                 translation_writer.writerow(s1 + [s2] + [output_sentence])
                 plt.clf()
-                plt.matshow(attentions.numpy())
-                plt.savefig(output_base + '/attention/att_' + str(index) + ".png")
+                # plt.matshow(attentions.numpy())
+                filename = output_base + '/attention/att_' + str(index) + ".png"
+                self.showAttention(pair[0], output_words, attentions, False, filename)
                 plt.close('all')
+                break
 
 
 
@@ -199,7 +204,7 @@ class EvalSeq2Seq:
     # and labels:
     #
 
-    def showAttention(self, input_sentence, output_words, attentions):
+    def showAttention(self, input_sentence, output_words, attentions, force_show=True, filename=None):
         # Set up figure with colorbar
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -215,8 +220,10 @@ class EvalSeq2Seq:
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
-        plt.show()
-
+        if force_show == True:
+            plt.show()
+        else:
+            plt.savefig(filename)
 
     def evaluateAndShowAttention(self, input_sentence):
         output_words, attentions = self.evaluate(
