@@ -154,10 +154,10 @@ def read_requences():
             if i < 1:
                 continue
 
-            s1 = ' '.join(row[0:7])
+            s1 = ' '.join(row[0:(len(row)-1)])
             # s1 = normalizeString(s1)
 
-            s2 = ' '.join(row[7:8])
+            s2 = ' '.join(row[(len(row)-1):len(row)])
             # s2 = normalizeString(s2)
             l = len(s2.split())
             if l > maxlen:
