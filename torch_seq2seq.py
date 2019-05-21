@@ -322,6 +322,17 @@ def timeSince(since, percent):
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
 
+
+def save_model(encoder: EncoderRNN, decoder: AttnDecoderRNN, encoder_optimizer, decoder_optimizer, iteration=None, loss=None):
+    # save encoer model
+    encoder_state = {'epoch': iteration, 'state_dict': encoder.state_dict(),
+                     'optimizer': encoder_optimizer.state_dict(), 'loss': loss, }
+    torch.save(encoder_state, 'data/model/encoder_' + str(iteration) + '_' + str(loss) + ".tar")
+
+    # save decoder model
+    decoder_state = {'epoch': iteration, 'state_dict': decoder.state_dict(),
+                     'optimizer': decoder_optimizer.state_dict(), 'loss': loss, }
+    torch.save(decoder_state, 'data/model/decoder_' + str(iteration) + '_' + str(loss) + ".tar")
 ######################################################################
 # The whole training process looks like this:
 #
@@ -334,7 +345,7 @@ def timeSince(since, percent):
 # of examples, time so far, estimated time) and average loss.
 #
 
-def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01):
+def trainIters(encoder: EncoderRNN, decoder: AttnDecoderRNN, n_iters, print_every=1000, plot_every=100, learning_rate=0.01):
 
     global eval_seq
 
@@ -349,6 +360,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
                       for i in range(n_iters)]
     criterion = nn.NLLLoss()
 
+    min_loss = 100000
     for iter in range(1, n_iters + 1):
         training_pair = training_pairs[iter - 1]
         input_tensor = training_pair[0]
@@ -358,6 +370,11 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
                      decoder, encoder_optimizer, decoder_optimizer, criterion)
         print_loss_total += loss
         plot_loss_total += loss
+
+        # if min_loss > loss:
+        #     print("saving model at: iter=", iter, "loss=", loss)
+        #     save_model(encoder, decoder, encoder_optimizer, decoder_optimizer, iteration=iter, loss=loss)
+        #     min_loss = loss
 
         if iter % print_every == 0:
             print_loss_avg = print_loss_total / print_every
@@ -370,7 +387,13 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
 
-    eval_seq.showPlot(plot_losses, force_show=True)
+    with open('data/model/loss.csv', 'w') as loss_file:
+        loss_writer = csv.writer(loss_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for l in plot_losses:
+            loss_writer.writerow([l])
+
+        print("Done writing loss file")
+    eval_seq.showPlot(plot_losses, force_show=True, save_figure=True, figure_filename='data/model/loss.png')
 
 
 ######################################################################

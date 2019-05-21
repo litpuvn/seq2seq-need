@@ -26,13 +26,16 @@ class EvalSeq2Seq:
         self.device = device
 
 
-    def showPlot(self, points, force_show=False):
+    def showPlot(self, points, force_show=False, save_figure=False, figure_filename=None):
         plt.figure()
         fig, ax = plt.subplots()
         # this locator puts ticks at regular intervals
         loc = ticker.MultipleLocator(base=0.2)
         ax.yaxis.set_major_locator(loc)
         plt.plot(points)
+
+        if save_figure == True and figure_filename is not None:
+            plt.savefig(figure_filename)
 
         if force_show:
             plt.show()
