@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import random
+import csv
 from util_seq2seq import AttnDecoderRNN, EncoderRNN, Lang
 
 SOS_token = 0
@@ -39,6 +40,8 @@ class EvalSeq2Seq:
 
         if force_show:
             plt.show()
+        else:
+            plt.close('all')
 
     ######################################################################
     # .. note:: There are other forms of attention that work around the length
@@ -139,6 +142,27 @@ class EvalSeq2Seq:
 
     ######################################################################
     #
+    def evaluate_data(self, encoder, decoder, pair_array, output_base: str):
+        with open(output_base + '/houston.csv', 'w') as file_pointer:
+            translation_writer = csv.writer(file_pointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            translation_writer.writerow(['Date', 'Hour', 'Minute', 'Wind', 'Pressure', 'Storm Type', 'Category',
+                                     'End_hour', "End_minute", "City", "Needs", "translated_needs"])
+            for index, pair in enumerate(pair_array):
+                print('>', pair[0])
+                print('=', pair[1])
+                output_words, attentions = self.evaluate(encoder, decoder, pair[0])
+                output_sentence = ' '.join(output_words)
+                print('<', output_sentence)
+                print('')
+
+                s1 = pair[0].split()
+                s2 = pair[1]
+
+                translation_writer.writerow(s1 + [s2] + [output_sentence])
+                plt.clf()
+                plt.matshow(attentions.numpy())
+                plt.savefig(output_base + '/attention/att_' + str(index) + ".png")
+                plt.close('all')
 
 
 

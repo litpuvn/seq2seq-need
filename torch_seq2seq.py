@@ -143,6 +143,7 @@ def read_requences():
     print("Reading lines...")
 
     pairs = []
+    houstons = []
     # Read the file and split into lines
     with open('data/need_dataset.csv', encoding='utf-8') as dataset_pointer:
         csv_reader = csv.reader(dataset_pointer, delimiter=',')
@@ -162,12 +163,16 @@ def read_requences():
                 maxlen = l
             pairs.append([s1, s2])
 
+            loc = row[10]
+            if loc == 'houston':
+                houstons.append([s1, s2])
+
     print('max sentence length:', maxlen)
     # Reverse pairs, make Lang instances
     input_lang = Lang("input_sequence")
     output_lang = Lang("output_sequence")
 
-    return input_lang, output_lang, pairs
+    return input_lang, output_lang, pairs, houstons
 
 
 ######################################################################
@@ -203,7 +208,7 @@ eng_prefixes = (
 #
 
 def prepareData():
-    input_lang, output_lang, pairs = read_requences()
+    input_lang, output_lang, pairs, houstons = read_requences()
     print("Read %s sentence pairs" % len(pairs))
     print("Trimmed to %s sentence pairs" % len(pairs))
     print("Counting words...")
@@ -213,7 +218,7 @@ def prepareData():
     print("Counted words:")
     print(input_lang.name, input_lang.n_words)
     print(output_lang.name, output_lang.n_words)
-    return input_lang, output_lang, pairs
+    return input_lang, output_lang, pairs, houstons
 
 
 
@@ -393,7 +398,7 @@ def trainIters(encoder: EncoderRNN, decoder: AttnDecoderRNN, n_iters, print_ever
             loss_writer.writerow([l])
 
         print("Done writing loss file")
-    eval_seq.showPlot(plot_losses, force_show=True, save_figure=True, figure_filename='data/model/loss.png')
+    eval_seq.showPlot(plot_losses, force_show=False, save_figure=True, figure_filename='data/model/loss.png')
 
 
 ######################################################################
@@ -426,7 +431,7 @@ def trainIters(encoder: EncoderRNN, decoder: AttnDecoderRNN, n_iters, print_ever
 
 hidden_size = 256
 
-input_lang, output_lang, pairs = prepareData()
+input_lang, output_lang, pairs, houston = prepareData()
 print(random.choice(pairs))
 
 
@@ -439,7 +444,8 @@ eval_seq = EvalSeq2Seq(input_lang=input_lang, output_lang=output_lang, pairs=pai
 # trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
 trainIters(encoder1, attn_decoder1, 5000, print_every=500)
 
-eval_seq.evaluateRandomly(encoder1, attn_decoder1)
+# eval_seq.evaluateRandomly(encoder1, attn_decoder1)
+eval_seq.evaluate_data(encoder1, attn_decoder1, houston, 'data/model')
 
 # output_words, attentions = evaluate(
 #     encoder1, attn_decoder1, "je suis trop froid .")
