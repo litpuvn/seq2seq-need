@@ -384,13 +384,14 @@ def trainIters(encoder: EncoderRNN, decoder: AttnDecoderRNN, n_iters, print_ever
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
 
-    with open('data/model/loss.csv', 'w') as loss_file:
+    filename = 'loss_' + str(n_iters)
+    with open('data/model/' + filename + '.csv', 'w') as loss_file:
         loss_writer = csv.writer(loss_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for l in plot_losses:
             loss_writer.writerow([l])
 
         print("Done writing loss file")
-    eval_seq.showPlot(plot_losses, force_show=False, save_figure=True, figure_filename='data/model/loss.png')
+    eval_seq.showPlot(plot_losses, force_show=False, save_figure=True, figure_filename='data/model/' + filename + '.png')
 
 
 ######################################################################
@@ -434,7 +435,7 @@ eval_seq = EvalSeq2Seq(input_lang=input_lang, output_lang=output_lang, pairs=pai
                        attn_decoder=attn_decoder1, device=device)
 
 # trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
-trainIters(encoder1, attn_decoder1, 5000, print_every=500)
+trainIters(encoder1, attn_decoder1, 250000, print_every=1000)
 
 # eval_seq.evaluateRandomly(encoder1, attn_decoder1)
 eval_seq.evaluate_data(encoder1, attn_decoder1, houston, 'data/model')

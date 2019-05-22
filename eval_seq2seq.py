@@ -167,7 +167,7 @@ class EvalSeq2Seq:
                 filename = output_base + '/attention/att_' + str(index) + ".png"
                 self.showAttention(pair[0], output_words, attentions, False, filename)
                 plt.close('all')
-                break
+                # break
 
 
 
