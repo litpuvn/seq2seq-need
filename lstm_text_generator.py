@@ -31,32 +31,34 @@ print("Total Characters: ", n_chars)
 print("Total Vocab: ", n_vocab)
 # prepare the dataset of input to output pairs encoded as integers
 
-seq_length = 100
+seq_length = 8
 dataX = []
-dataY = []
-for i in range(0, n_chars - seq_length, 1):
-    seq_in = raw_text[i:i + seq_length]
-    seq_out = raw_text[i + seq_length]
+# for i in range(0, n_chars - seq_length, 1):
+#     seq_in = raw_text[i:i + seq_length]
+#     dataX.append([char_to_int[char] for char in seq_in])
 
-    # print('on iteration:', i)
-    # print('sequence in:', seq_in, "; sequence out:", seq_out)
-    dataX.append([char_to_int[char] for char in seq_in])
-    dataY.append(char_to_int[seq_out])
-n_patterns = len(dataX)
-print("Total Patterns: ", n_patterns)
-# reshape X to be [samples, time steps, features]
-X = numpy.reshape(dataX, (n_patterns, seq_length, 1))
-# normalize
-X = X / float(n_vocab)
+with open('data/need_dataset.csv') as file_pointer:
+    input_reader = csv.reader(file_pointer, delimiter=',')
+    for index, row in enumerate(input_reader):
+        if index < 1:
+            continue
+
+        city = row[0]
+        if city != 'houston':
+            continue
+        seq_in = row[0:seq_length]
+        dataX.append([char_to_int[char.lower()] for char in seq_in])
+
+
 # one hot encode the output variable
-y = np_utils.to_categorical(dataY)
+# y = np_utils.to_categorical(dataY)
 # define the LSTM model
 model = Sequential()
-model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2]), return_sequences=True))
+model.add(LSTM(256, input_shape=(seq_length, 1), return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(256))
 model.add(Dropout(0.2))
-model.add(Dense(y.shape[1], activation='softmax'))
+model.add(Dense(n_vocab, activation='softmax'))
 
 # define the LSTM model
 # load the network weights
@@ -66,19 +68,37 @@ model.compile(loss='categorical_crossentropy', optimizer='adam')
 # pick a random seed
 start = numpy.random.randint(0, len(dataX)-1)
 pattern = dataX[start]
-print ("Seed:")
-print ("\"", ' '.join([int_to_char[value] for value in pattern]), "\"")
+print("Seed:", ' '.join([int_to_char[value] for value in pattern]))
+
+
+
+need_list = ['boat', 'call', 'charity', 'clothes', 'diaper', 'dog', 'donation', 'food', 'fund', 'gas',
+             'help', 'money', 'pet', 'power', 'rescue', 'shelter', 'supplies', 'support', 'text', 'thing',
+             'volunteer', 'affect', 'home', 'animal', 'effort', 'relief', 'canoe', 'responder', 'die', 'prayer',
+             'governor', 'union', 'corps', 'care', 'trap', 'medical', 'hospital', 'house', 'emergency', 'wish',
+             'school', 'life', 'hope', 'family', 'stay', 'hit', 'cat', 'victim', 'recovery', 'shortage',
+             'family', 'advisory', 'advice', 'god', 'evacuate', 'friend', 'water', 'update', 'package', 'preparation',
+             'repair', 'secure', 'storage', 'sleep', 'supplier', 'survive', 'transportation', 'treatment', 'search', 'ship',
+             'castle', 'assist', 'alarm', 'calm', 'aid'
+             ]
 # generate characters
+needs = []
 for i in range(1000):
     x = numpy.reshape(pattern, (1, len(pattern), 1))
     x = x / float(n_vocab)
     prediction = model.predict(x, verbose=0)
     index = numpy.argmax(prediction)
     result = int_to_char[index]
+
+    if result in need_list:
+        needs.append(result)
+    if result == 'eos' or result == 'EOS':
+        print("translated needs:", ' '.join(needs))
+        break
     seq_in = [int_to_char[value] for value in pattern]
     # sys.stdout.write(result)
 
-    print("result: ", result)
+    # print("result: ", result)
     pattern.append(index)
     pattern = pattern[1:len(pattern)]
 print ("\nDone.")
