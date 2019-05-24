@@ -7,6 +7,7 @@ from keras.layers import Dropout
 from keras.layers import LSTM
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
+import os
 # load ascii text and covert to lowercase
 import csv
 
@@ -31,7 +32,7 @@ print("Total Characters: ", n_chars)
 print("Total Vocab: ", n_vocab)
 # prepare the dataset of input to output pairs encoded as integers
 
-seq_length = 8
+seq_length = 4
 dataX = []
 dataY = []
 for i in range(0, n_chars - seq_length, 1):
@@ -59,9 +60,12 @@ model.add(Dropout(0.2))
 model.add(Dense(y.shape[1], activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 
+base_folder = 'data/model/lstm_' + str(seq_length) + 'seq'
+if not os.path.isdir(base_folder):
+    os.mkdir(base_folder)
 
 # define the checkpoint
-filepath="data/model/lstm/weights-improvement-{epoch:02d}-{loss:.4f}.hdf5"
+filepath = base_folder + "/weights-improvement-{epoch:02d}-{loss:.4f}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 # fit the model
