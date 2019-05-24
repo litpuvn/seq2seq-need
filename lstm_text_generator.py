@@ -33,6 +33,7 @@ print("Total Vocab: ", n_vocab)
 
 seq_length = 8
 dataX = []
+original_dataX = []
 # for i in range(0, n_chars - seq_length, 1):
 #     seq_in = raw_text[i:i + seq_length]
 #     dataX.append([char_to_int[char] for char in seq_in])
@@ -48,7 +49,7 @@ with open('data/need_dataset.csv') as file_pointer:
             continue
         seq_in = row[0:seq_length]
         dataX.append([char_to_int[char.lower()] for char in seq_in])
-
+        original_dataX.append(row)
 
 # one hot encode the output variable
 # y = np_utils.to_categorical(dataY)
@@ -62,13 +63,10 @@ model.add(Dense(n_vocab, activation='softmax'))
 
 # define the LSTM model
 # load the network weights
-filename = "data/model/lstm/weights-improvement-20-1.8472.hdf5"
+filename = "data/model/lstm/weights-improvement-20-1.8921.hdf5"
 model.load_weights(filename)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
-# pick a random seed
-start = numpy.random.randint(0, len(dataX)-1)
-pattern = dataX[start]
-print("Seed:", ' '.join([int_to_char[value] for value in pattern]))
+
 
 
 
@@ -81,24 +79,40 @@ need_list = ['boat', 'call', 'charity', 'clothes', 'diaper', 'dog', 'donation', 
              'repair', 'secure', 'storage', 'sleep', 'supplier', 'survive', 'transportation', 'treatment', 'search', 'ship',
              'castle', 'assist', 'alarm', 'calm', 'aid'
              ]
-# generate characters
-needs = []
-for i in range(1000):
-    x = numpy.reshape(pattern, (1, len(pattern), 1))
-    x = x / float(n_vocab)
-    prediction = model.predict(x, verbose=0)
-    index = numpy.argmax(prediction)
-    result = int_to_char[index]
 
-    if result in need_list:
-        needs.append(result)
-    if result == 'eos' or result == 'EOS':
-        print("translated needs:", ' '.join(needs))
-        break
-    seq_in = [int_to_char[value] for value in pattern]
-    # sys.stdout.write(result)
 
-    # print("result: ", result)
-    pattern.append(index)
-    pattern = pattern[1:len(pattern)]
-print ("\nDone.")
+with open('data/model/baseline_lstm.csv', 'w') as file_pointer:
+    dataset_writer = csv.writer(file_pointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    dataset_writer.writerow(['City', 'Date-month', 'Days_Formed', 'Hour', 'Wind', 'Pressure', 'Storm Type', 'Category',
+                                 "Needs", "translated_needs"])
+    for i in range(len(dataX)):
+        pattern = dataX[i]
+
+        row = original_dataX[i]
+
+
+        print("Seed:", ' '.join([int_to_char[value] for value in pattern]))
+
+        # generate characters
+        needs = []
+        while True:
+            x = numpy.reshape(pattern, (1, len(pattern), 1))
+            x = x / float(n_vocab)
+            prediction = model.predict(x, verbose=0)
+            index = numpy.argmax(prediction)
+            result = int_to_char[index]
+
+            if result in need_list:
+                needs.append(result)
+            if result == 'eos' or result == 'EOS':
+                print("translated needs:", ' '.join(needs))
+                break
+            seq_in = [int_to_char[value] for value in pattern]
+            # sys.stdout.write(result)
+
+            # print("result: ", result)
+            pattern.append(index)
+            pattern = pattern[1:len(pattern)]
+
+        dataset_writer.writerow(row + needs)
+    print ("\nDone.")
