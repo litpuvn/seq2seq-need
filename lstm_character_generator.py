@@ -12,11 +12,11 @@ import csv
 
 
 
-filename = "data/fixed_need_dataset.csv"
+filename = "data/need_dataset.csv"
 file_pointer = open(filename)
 file_pointer.readline()
 raw_text = file_pointer.read()
-raw_text = raw_text.replace('\n', ' eos ')
+raw_text = raw_text.replace('\n', ' EOS ')
 raw_text = raw_text.replace(',', ' ')
 raw_text = raw_text.lower()
 raw_text = raw_text.split()
@@ -34,48 +34,40 @@ print("Total Vocab: ", n_vocab)
 seq_length = 8
 dataX = []
 original_dataX = []
-dataY = []
-patterns = []
 # for i in range(0, n_chars - seq_length, 1):
 #     seq_in = raw_text[i:i + seq_length]
 #     dataX.append([char_to_int[char] for char in seq_in])
 
-with open(filename) as filePointer:
-    csv_reader = csv.reader(filePointer, delimiter=',')
-    for i, row in enumerate(csv_reader):
-        if i < 1:
+with open('data/need_dataset.csv') as file_pointer:
+    input_reader = csv.reader(file_pointer, delimiter=',')
+    for index, row in enumerate(input_reader):
+        if index < 1:
             continue
+
         city = row[0]
         if city != 'houston':
             continue
-        full_row = row[0:(len(row)-1)] + row[len(row)-1].split() + ['eos']
-        print('processing..row', i)
-        for k in range(0, len(full_row) - seq_length, 1):
-            seq_in = full_row[k:(k+seq_length)]
-            seq_out = full_row[k + seq_length]
-            print('on iteration:', k)
-            print('sequence in:', seq_in, "; sequence out:", seq_out)
-            dataX.append([char_to_int[char.lower()] for char in seq_in])
-            dataY.append(char_to_int[seq_out.lower()])
 
-            if k < 1:
-                patterns.append([char_to_int[char.lower()] for char in seq_in])
-                original_dataX.append(row)
+        seq_in = []
+        for item in row[0:seq_length]:
+            seq_in = seq_in + item.split()
 
+        dataX.append([char_to_int[char.lower()] for char in seq_in])
+        original_dataX.append(row)
 
 # one hot encode the output variable
-y = np_utils.to_categorical(dataY)
+# y = np_utils.to_categorical(dataY)
 # define the LSTM model
 model = Sequential()
 model.add(LSTM(256, input_shape=(seq_length, 1), return_sequences=False))
 # model.add(Dropout(0.2))
 # model.add(LSTM(256))
-model.add(Dropout(0.1))
-model.add(Dense(y.shape[1], activation='softmax'))
+model.add(Dropout(0.2))
+model.add(Dense(n_vocab, activation='softmax'))
 
 # define the LSTM model
 # load the network weights
-filename = "data/model/lstm_" + str(seq_length) + "seq/weights-improvement-20-2.9996.hdf5"
+filename = "data/model/lstm_" + str(seq_length) + "seq/weights-improvement-20-2.0428.hdf5"
 model.load_weights(filename)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 
@@ -97,19 +89,16 @@ with open('data/model/baseline_lstm_' + str(seq_length) + 'seq.csv', 'w') as fil
     dataset_writer = csv.writer(file_pointer, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     dataset_writer.writerow(['City', 'Date-month', 'Days_Formed', 'Hour', 'Wind', 'Pressure', 'Storm Type', 'Category',
                                  "Needs", "translated_needs"])
-    for i in range(len(patterns)):
-        pattern = patterns[i]
+    for i in range(len(dataX)):
+        pattern = dataX[i]
 
         row = original_dataX[i]
+        print("Seed:", ' '.join([int_to_char[value] for value in pattern]))
 
         # generate characters
         needs = []
         actual_translation = []
-
-        j = 1
         while True:
-            print("Seed:", j, ' '.join([int_to_char[value] for value in pattern]))
-            j = j + 1
             x = numpy.reshape(pattern, (1, len(pattern), 1))
             x = x / float(n_vocab)
             prediction = model.predict(x, verbose=0)

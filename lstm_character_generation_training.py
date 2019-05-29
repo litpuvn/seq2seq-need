@@ -13,11 +13,11 @@ import csv
 
 
 
-filename = "data/fixed_need_dataset.csv"
+filename = "data/need_dataset.csv"
 file_pointer = open(filename)
 file_pointer.readline()
 raw_text = file_pointer.read()
-raw_text = raw_text.replace('\n', ' eos ')
+raw_text = raw_text.replace('\n', ' EOS ')
 raw_text = raw_text.replace(',', ' ')
 raw_text = raw_text.lower()
 raw_text = raw_text.split()
@@ -35,30 +35,14 @@ print("Total Vocab: ", n_vocab)
 seq_length = 8
 dataX = []
 dataY = []
+for i in range(0, n_chars - seq_length, 1):
+    seq_in = raw_text[i:i + seq_length]
+    seq_out = raw_text[i + seq_length]
 
-with open(filename) as filePointer:
-    csv_reader = csv.reader(filePointer, delimiter=',')
-    for i, row in enumerate(csv_reader):
-        if i < 1:
-            continue
-        full_row = row[0:(len(row)-1)] + row[len(row)-1].split() + ['eos']
-        print('processing..row', i)
-        for k in range(0, len(full_row) - seq_length, 1):
-            seq_in = full_row[k:(k+seq_length)]
-            seq_out = full_row[k + seq_length]
-            print('on iteration:', k)
-            print('sequence in:', seq_in, "; sequence out:", seq_out)
-            dataX.append([char_to_int[char.lower()] for char in seq_in])
-            dataY.append(char_to_int[seq_out.lower()])
-
-# for i in range(0, n_chars - seq_length, 1):
-#     seq_in = raw_text[i:i + seq_length]
-#     seq_out = raw_text[i + seq_length]
-#
-#     print('on iteration:', i)
-#     print('sequence in:', seq_in, "; sequence out:", seq_out)
-#     dataX.append([char_to_int[char] for char in seq_in])
-#     dataY.append(char_to_int[seq_out])
+    print('on iteration:', i)
+    print('sequence in:', seq_in, "; sequence out:", seq_out)
+    dataX.append([char_to_int[char] for char in seq_in])
+    dataY.append(char_to_int[seq_out])
 n_patterns = len(dataX)
 print("Total Patterns: ", n_patterns)
 # reshape X to be [samples, time steps, features]
