@@ -13,3 +13,4 @@ lib/nn_model/__pycache__/
 configs/__pycache__/
 data_trans
 __pycache__/
+prior_needs/data/
